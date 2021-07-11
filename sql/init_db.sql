@@ -22,3 +22,10 @@ CREATE TABLE `realestate` (
   `distance_from_center` float DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=25408 DEFAULT CHARSET=utf8mb4;
+CREATE TABLE `knn` (
+  `size` int(11) DEFAULT NULL,
+  `distance_from_center` double DEFAULT NULL,
+  `rooms` int(11) DEFAULT NULL,
+  `year` int(11) DEFAULT NULL,
+  `price` int(11) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

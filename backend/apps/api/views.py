@@ -331,12 +331,13 @@ def knn_prediction(request):
     distance = body['distance']
     rooms = body['rooms']
     old_new = body['old_new']
+    k = body['k'] if body['k'] != '' else None
 
     db = DbManager.Instance()
     con = db.create_engine()
     df = pd.read_sql("""select * from db.knn """, con=con)
-    print(df)
+    print(k)
 
-    c = knn(df, np.array([float(size), float(distance), float(rooms), int(old_new)]))
+    c = knn(df, np.array([float(size), float(distance), float(rooms), int(old_new)]), k)
     
     return Response(c)

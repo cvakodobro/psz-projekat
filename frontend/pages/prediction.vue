@@ -3,7 +3,7 @@
     <v-col cols="12" md="6">
       <v-card class="elevation-0">
         <v-card-title class="headline"> Linear Regression </v-card-title>
-        <v-card-text>
+        <v-card-text style="margin-top: 74px">
           <v-form ref="linearForm" v-model="valid" lazy-validation>
             <v-text-field
               v-model="size"
@@ -48,6 +48,7 @@
         <v-card-title class="headline"> k-Nearest Neighbors </v-card-title>
         <v-card-text>
           <v-form ref="knnForm" v-model="validKnn" lazy-validation>
+            <v-text-field v-model="k" label="k"></v-text-field>
             <v-text-field
               v-model="knn_size"
               :rules="sizeRules"
@@ -170,18 +171,22 @@
           >
             <l-control-zoom position="bottomright"></l-control-zoom>
             <l-control position="topleft">
-              <v-card v-if="knn_result !== null">
+              <v-card v-if="knn_result_e !== null">
                 <v-card-text>
                   <v-simple-table>
                     <template #default>
                       <tbody>
                         <tr>
-                          <td
-                            colspan="2"
-                            style="text-align: center"
-                            class="headline"
-                          >
-                            {{ parseInt(knn_result).toLocaleString() }}
+                          <td>Price (Euclidean):</td>
+                          <td style="text-align: center" class="headline">
+                            {{ knn_result_e }}
+                            &euro;
+                          </td>
+                        </tr>
+                        <tr>
+                          <td>Price (Manhattan):</td>
+                          <td style="text-align: center" class="headline">
+                            {{ knn_result_e }}
                             &euro;
                           </td>
                         </tr>
@@ -210,7 +215,7 @@
             <l-tile-layer :url="url"></l-tile-layer>
             <l-circle-marker :lat-lng="center" :radius="2" color="#66D2D6" />
             <l-circle
-              v-if="knn_result !== null"
+              v-if="knn_result_e !== null"
               :lat-lng="center"
               :radius="parseFloat(knn_distance) * 1000"
               color="#FBC740"
@@ -237,6 +242,7 @@ export default {
       center: [44.8159136, 20.4607347],
       valid: true,
       validKnn: true,
+      k: '',
       size: '',
       knn_size: '',
       sizeRules: [
@@ -259,7 +265,8 @@ export default {
       old_new: null,
       items: ['Old', 'New', 'No data'],
       regression_result: null,
-      knn_result: null,
+      knn_result_e: null,
+      knn_result_m: null,
     }
   },
   methods: {
@@ -287,9 +294,11 @@ export default {
         distance: this.knn_distance,
         rooms: this.knn_rooms,
         old_new: this.mapOldNew(),
+        k: this.k,
       }
       const result = await this.$axios.post('/knn', form)
-      this.knn_result = result.data
+      this.knn_result_e = this.map_knn(result.data[0])
+      this.knn_result_m = this.map_knn(result.data[1])
     },
     mapOldNew() {
       if (this.knn_old_new === 'Old') {
@@ -300,6 +309,20 @@ export default {
       }
       if (this.knn_old_new === 'No data') {
         return 0
+      }
+    },
+    map_knn(cls) {
+      switch (cls) {
+        case 1:
+          return 'Less than 49K'
+        case 2:
+          return '50K - 99K'
+        case 3:
+          return '100K -150K'
+        case 4:
+          return '150K - 199K'
+        case 5:
+          return 'More than 200K'
       }
     },
   },
