@@ -19,7 +19,7 @@ def knn(df, new_point, k=None):
 
     if k == None:
         k = int(sqrt(len(df.index)+1))
-        k = k if k % 2 == 0 else k-1
+        k = k if k % 2 == 0 else k+1
     else: 
         k=int(k)
 
