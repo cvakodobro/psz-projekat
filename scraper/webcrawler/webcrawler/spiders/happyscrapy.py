@@ -22,8 +22,8 @@ def haversine(lon2, lat2):
     return c * r
 
 
-class CrapyScrapy(scrapy.Spider):
-    name = "CrapyScrapy"
+class HappyScrapy(scrapy.Spider):
+    name = "HappyScrapy"
     start_urls = [
         'https://www.nekretnine.rs/stambeni-objekti/stanovi/izdavanje-prodaja/prodaja/lista/po-stranici/20/',
         'https://www.nekretnine.rs/stambeni-objekti/stanovi/izdavanje-prodaja/izdavanje/lista/po-stranici/20/',
@@ -60,14 +60,14 @@ class CrapyScrapy(scrapy.Spider):
             block = None
         return location, block
 
-    def govno(self, tag, pat):
+    def get_text_from_list(self, tag, pat):
         for li in tag:
             if li.css("li::text").get().strip() == pat:
                 return tag.index(li)+1
 
         return -1
 
-    def govno2(self, tag, pat):
+    def get_text_from_list_span(self, tag, pat):
         for li in tag:
             if li.css("li span::text").extract()[0] == pat:
                 return tag.index(li)
@@ -78,7 +78,7 @@ class CrapyScrapy(scrapy.Spider):
         details_tag = response.css(
             "section#detalji div.property__amenities")[0]
 
-        add_type_index = self.govno(details_tag.css("ul li"), "Transakcija:")
+        add_type_index = self.get_text_from_list(details_tag.css("ul li"), "Transakcija:")
         add_type = details_tag.css("ul li:nth-child({}) strong::text".format(
             add_type_index)).get().strip() if add_type_index > -1 else None
         if add_type == 'Prodaja':
@@ -86,27 +86,27 @@ class CrapyScrapy(scrapy.Spider):
         if add_type == 'Izdavanje':
             add_type = 'r'
 
-        size_index = self.govno(details_tag.css("ul li"), "Kvadratura:")
+        size_index = self.get_text_from_list(details_tag.css("ul li"), "Kvadratura:")
         size = float(details_tag.css("ul li:nth-child({}) strong::text".format(
             size_index)).get().strip().split(" ")[0]) if size_index > -1 else None
 
-        area_index = self.govno(details_tag.css("ul li"), "Površina zemljišta:")
+        area_index = self.get_text_from_list(details_tag.css("ul li"), "Površina zemljišta:")
         area = float(details_tag.css("ul li:nth-child({}) strong::text".format(
             area_index)).get().strip().split(" ")[0]) if area_index > -1 else None
 
-        year_index = self.govno(details_tag.css("ul li"), "Godina izgradnje:")
+        year_index = self.get_text_from_list(details_tag.css("ul li"), "Godina izgradnje:")
         year = int(details_tag.css("ul li:nth-child({}) strong::text".format(year_index)
                                    ).get().strip()) if year_index > -1 else None
 
-        rooms_index = self.govno(details_tag.css("ul li"), "Ukupan broj soba:")
+        rooms_index = self.get_text_from_list(details_tag.css("ul li"), "Ukupan broj soba:")
         rooms = float(details_tag.css("ul li:nth-child({}) strong::text".format(
             rooms_index)).get().strip()) if rooms_index > -1 else None
 
-        toiletes_index = self.govno(details_tag.css("ul li"), "Broj kupatila:")
+        toiletes_index = self.get_text_from_list(details_tag.css("ul li"), "Broj kupatila:")
         toiletes = int(details_tag.css("ul li:nth-child({}) strong::text".format(
             toiletes_index)).get().strip()) if toiletes_index > -1 else None
 
-        storey_index = self.govno(details_tag.css("ul li"), "Spratnost:")
+        storey_index = self.get_text_from_list(details_tag.css("ul li"), "Spratnost:")
         storey = details_tag.css("ul li:nth-child({}) strong::text".format(
             storey_index)).get().strip() if storey_index > -1 else None
         if storey == 'Prizemlje' or storey == 'Visoko prizemlje':
@@ -116,16 +116,16 @@ class CrapyScrapy(scrapy.Spider):
         if storey != None:
             storey = int(storey)
 
-        total_storeys_index = self.govno(
+        total_storeys_index = self.get_text_from_list(
             details_tag.css("ul li"), "Ukupan broj spratova:")
         total_storeys = int(details_tag.css("ul li:nth-child({}) strong::text".format(
             total_storeys_index)).get().strip()) if total_storeys_index > -1 else None
 
-        registered_index = self.govno(details_tag.css("ul li"), "Uknjiženo:")
+        registered_index = self.get_text_from_list(details_tag.css("ul li"), "Uknjiženo:")
 
         if registered_index == -1:
             main_tag = response.css("div.property__main-details ul li")
-            registered_index=self.govno2(main_tag, "Uknjiženo:")   
+            registered_index=self.get_text_from_list_span(main_tag, "Uknjiženo:")   
             # print(registered_index)   
             # print(main_tag[registered_index])   
             registered = main_tag[registered_index].css("li span::text").extract()[1] if registered_index > -1 else None

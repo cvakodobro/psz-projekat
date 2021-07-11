@@ -9,5 +9,5 @@
         "PYTHONPATH": "${workspaceFolder}",
     },
     "python.envFile": "${workspaceFolder}/.env",
-    "python.pythonPath": ".venv/bin/python"
+    "python.pythonPath": ".venv\\Scripts\\python.exe"
 }

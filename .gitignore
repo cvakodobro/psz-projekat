@@ -6,3 +6,7 @@ __pycache__/
 backend/backend/settings/dev.py
 backend/backend/settings/prod.py
 .env
+venv
+models/test.py
+models/test2.py
+.vscode/settings.json
