@@ -50,6 +50,11 @@ export default {
           title: 'Database',
           to: '/inspire',
         },
+        {
+          icon: 'mdi-file-find-outline',
+          title: 'Price predicton',
+          to: '/prediction',
+        },
       ],
       miniVariant: false,
       right: true,

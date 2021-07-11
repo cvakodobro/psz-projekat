@@ -43,7 +43,10 @@ export default {
   css: [],
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
-  plugins: [{ src: '~/plugins/apexcharts.js', ssr: false }],
+  plugins: [
+    { src: '~/plugins/apexcharts.js', ssr: false },
+    { src: '~plugins/leaflet.js', ssr: false },
+  ],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
   components: true,
