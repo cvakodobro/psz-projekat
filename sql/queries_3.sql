@@ -1,3 +1,7 @@
+select block, count(*) as number from db.realestate where add_type = 's' and location='Beograd' group by block order by number desc limit 10
+select block, count(*) as number from db.realestate where add_type = 'r' and location='Beograd' group by block order by number desc limit 10
+select block, count(*) as number from db.realestate where location='Beograd' group by block order by number desc limit 10
+
 select category, count(*) from
 	(SELECT size,
 	CASE
