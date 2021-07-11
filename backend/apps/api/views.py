@@ -1,9 +1,12 @@
 from django.shortcuts import render
 from .lib.db_manager import DbManager
+from .lib.knn import knn
 import pandas as pd
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 import json
+import numpy as np
+
 
 # Create your views here.
 
@@ -288,3 +291,52 @@ def get_top_30_rooms_area(request):
         "area": result_a
     }
     return Response(result)
+
+
+@api_view(['POST'])
+def linear_regression(request):
+    # coef = [0.06234250867109111, 0.18303986395649746, -0.07584340781035734, 0.1621612746711966, 0.04906277871235839, 0.02886093913553555, 0.03254728862143361]
+    # min =[8.0, 0.0246945, 0.5, 10000]
+    # max = [1350.0, 40.1904, 20.0, 1450000]
+
+
+    # coef = [0.08046321470875929, 0.20532361015352923, -0.07975133541146963, 0.18806038225464353, 0.060185353301486146, 0.03457996434530676, 0.039478804953286116]
+    # min = [8.0, 0.0246945, 0.5, 10000]
+    # max = [1350.0, 9.9554, 20.0, 1450000]
+
+    coef = [0.19444630693434317, 0.21701636913393632, -0.16081775246562435, 0.352622854640144, 0.14428806978293235, 0.08579726588914242, 0.09149714041624087]
+    min = [8.0, 0.0246945, 0.5, 10000]
+    max = [1200.0, 9.9554, 14.0, 499900]
+    body = json.loads(request.body.decode('utf-8'))
+    size = body['size']
+    distance = body['distance']
+    rooms = body['rooms']
+    old = body['old']
+    new = body['new']
+    nodata = body['nodata']
+
+    s_n = (float(size)-min[0])/(max[0]-min[0])
+    d_n = (float(distance)-min[1])/(max[1]-min[1])
+    r_n = (float(rooms)-min[2])/(max[2]-min[2])
+
+    c_n = coef[0] + coef[1]*s_n + coef[2]*d_n +coef[3]*r_n + coef[4]*int(new) + coef[5]*int(old) +coef[6]*int(nodata)
+    c = c_n*(max[3]-min[3]) + min[3]
+    
+    return Response(c)
+
+@api_view(['POST'])
+def knn_prediction(request):
+    body = json.loads(request.body.decode('utf-8'))
+    size = body['size']
+    distance = body['distance']
+    rooms = body['rooms']
+    old_new = body['old_new']
+
+    db = DbManager.Instance()
+    con = db.create_engine()
+    df = pd.read_sql("""select * from db.knn """, con=con)
+    print(df)
+
+    c = knn(df, np.array([float(size), float(distance), float(rooms), int(old_new)]))
+    
+    return Response(c)

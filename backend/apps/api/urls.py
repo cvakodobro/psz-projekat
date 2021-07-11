@@ -22,6 +22,8 @@ urlpatterns = [
     path('top100', views.get_top_100, name='get_top_100'),
     path('2020', views.get_2020, name='get_2020'),
     path('top30_rooms_area', views.get_top_30_rooms_area, name='get_top_30_rooms_area'),
+    path('linear_regression', views.linear_regression, name='linear_regression'),
+    path('knn', views.knn_prediction, name='knn'),
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)
